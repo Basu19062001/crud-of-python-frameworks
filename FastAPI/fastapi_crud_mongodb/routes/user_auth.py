@@ -18,7 +18,7 @@ routes = APIRouter(prefix="/user")
 check_auth = OAuth2PasswordBearer(tokenUrl="/login")
 
 
-@routes.post("/signup", response_model=UserResponseModel, tags=["users"])
+@routes.post("/signup", response_model=UserResponseModel, tags=["User-Authentication"])
 async def signup(user_data: UserModel):
     user_dict_data = user_data.model_dump()
 
@@ -71,7 +71,7 @@ async def signup(user_data: UserModel):
     )
 
 
-@routes.post("/login", response_model=UserLoginResponse, tags=["users"])
+@routes.post("/login", response_model=UserLoginResponse, tags=["User-Authentication"])
 async def login(user: UserLoginModel):
     user_dict = user.model_dump()
 
@@ -111,7 +111,7 @@ async def login(user: UserLoginModel):
     )
 
 
-@routes.post("/logout")
+@routes.post("/logout", tags=["User-Authentication"])
 async def logout(token: str = Depends(check_auth)):
     try:
         user = Token.decode_token(token)

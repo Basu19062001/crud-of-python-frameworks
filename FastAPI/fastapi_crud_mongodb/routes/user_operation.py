@@ -10,7 +10,7 @@ from config import Mongo
 
 opt_routes = APIRouter(prefix="/user")
 
-@opt_routes.get("/get_users", tags=["users"])
+@opt_routes.get("/get_users", tags=["User-Operation"])
 async def get_users(
     token: str = Depends(check_auth),
     page: int = Query(1, ge=1, description="Page number [starting from 1]"),
@@ -77,7 +77,7 @@ async def get_users(
 
 
 
-@opt_routes.get("/get-user/{user_id}")
+@opt_routes.get("/get-user/{user_id}", tags=["User-Operation"])
 async def get_user_by_id(user_id: str = Path(...)):
     try:
         _id = ObjectId(user_id)
