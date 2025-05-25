@@ -30,3 +30,10 @@ class UserLoginResponse(BaseModel):
     status: bool
     token: str
     type: Optional[str] = "Bearer"
+
+class UserUpdateModel(BaseModel):
+    username: Optional[str]
+    email: Optional[EmailStr]
+    password: Optional[str]
+    confirm_password: Optional[str]
+    
