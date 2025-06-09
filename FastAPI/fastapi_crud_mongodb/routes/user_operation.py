@@ -140,9 +140,52 @@ async def user_update_by_id(
         )
 
 
-@opt_routes.delete("/delete-user/{user_id}", status_code=status.HTTP_200_OK, tags=["User-Operation"])
+@opt_routes.delete(
+    "/delete-user/{user_id}", status_code=status.HTTP_200_OK, tags=["User-Operation"]
+)
 async def delete_user_by_id(
     token: str = Depends(check_auth),
     user_id: str = Path(..., description="Id of the user to delete"),
-    ):
-    pass
+):
+    try:
+        token_user = Token.decode_token(token=token)
+
+        if not ObjectId.is_valid(user_id):
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid user Id format"
+            )
+
+        existing_user = UserOperation.get_user_by_id({"_id": ObjectId(user_id)})
+        if not existing_user:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND, detail="User not found"
+            )
+
+        result = Mongo.user_collection.delete_one({"_id": ObjectId(user_id)})
+        if result.deleted_count == 0:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Failed to delete the user",
+            )
+
+        return JSONResponse(
+            content={
+                "message": "User delete successfully",
+                "status": True,
+                "delete_user_id": user_id,
+            },
+            status_code=status.HTTP_200_OK,
+        )
+
+    except HTTPException as http_ex:
+        raise http_ex
+    except PyMongoError as pe:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Database error during deletion: {str(pe)}",
+        )
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Unexpected error occurred: {str(e)}",
+        )
