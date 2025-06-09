@@ -138,3 +138,11 @@ async def user_update_by_id(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Internal server error while update user by id: {str(e)}",
         )
+
+
+@opt_routes.delete("/delete-user/{user_id}", status_code=status.HTTP_200_OK, tags=["User-Operation"])
+async def delete_user_by_id(
+    token: str = Depends(check_auth),
+    user_id: str = Path(..., description="Id of the user to delete"),
+    ):
+    pass
