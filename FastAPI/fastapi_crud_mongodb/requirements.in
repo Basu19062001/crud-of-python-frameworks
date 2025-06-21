@@ -1,9 +1,0 @@
-fastapi
-uvicorn
-motor
-pymongo
-python-dotenv
-passlib
-bcrypt
-pydantic[email]
-python-jose
