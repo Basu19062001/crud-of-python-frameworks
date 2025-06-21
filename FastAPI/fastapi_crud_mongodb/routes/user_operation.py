@@ -41,10 +41,15 @@ async def get_users(
             {"$limit": limit},
             {
                 "$project": {
-                    "_id": {"$toString": "&_id"},
+                    "_id": {"$toString": "$_id"},
                     "username": 1,
                     "email": 1,
-                    "created_at": 1,
+                    "created_at": {
+                        "$dateToString": {
+                            "format": "%Y-%m-%dT%H:%M:%S",
+                            "date": "$created_at"
+                        }
+                    },
                 }
             },
         ]
