@@ -63,7 +63,7 @@ async def signup(user_data: UserModel):
 
     return JSONResponse(
         content={
-            "message": "User login successful.",
+            "message": "User signup successful.",
             "status": True,
             "data": resp_payload,
         },
