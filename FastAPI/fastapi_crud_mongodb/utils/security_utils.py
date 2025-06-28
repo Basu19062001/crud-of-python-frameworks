@@ -35,7 +35,7 @@ class Token:
     @classmethod
     def generate_token(cls, user_data: dict)->str:
         try:
-            expire = datetime.now(timezone.utc) + timedelta(minutes=30)
+            expire = datetime.now(timezone.utc) + timedelta(days=1)
             payload = {
                 "sub":str(user_data.get("_id")),
                 "username": user_data.get("username"),
