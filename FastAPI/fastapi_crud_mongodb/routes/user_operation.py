@@ -149,7 +149,7 @@ async def user_update_by_id(
         )
 
 
-@opt_routes.delete(
+@opt_routes.put(
     "/delete-user/{user_id}", status_code=status.HTTP_200_OK, tags=["User-Operation"]
 )
 async def delete_user_by_id(
@@ -164,14 +164,14 @@ async def delete_user_by_id(
                 status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid user Id format"
             )
 
-        existing_user = UserOperation.get_user_by_id({"_id": ObjectId(user_id)})
+        existing_user = UserOperation.get_user_by_id(user_id=user_id)
         if not existing_user:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND, detail="User not found"
             )
 
-        result = Mongo.user_collection.delete_one({"_id": ObjectId(user_id)})
-        if result.deleted_count == 0:
+        result = Mongo.user_collection.update_one({"_id": ObjectId(user_id)},{"$set":{"is_deleted":True}})
+        if result.matched_count == 0:
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 detail="Failed to delete the user",

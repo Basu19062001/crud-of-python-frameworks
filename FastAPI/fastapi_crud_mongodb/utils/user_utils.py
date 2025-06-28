@@ -104,7 +104,6 @@ class UserOperation:
             ]
 
             result = list(Mongo.user_collection.aggregate(pipeline))
-            print("result:",result)
 
             if not result:
                 raise HTTPException(
