@@ -1,10 +1,24 @@
 from datetime import datetime, timezone
+from typing import Any
+
 from fastapi import HTTPException, status
 from fastapi.responses import JSONResponse
 from bson.objectid import ObjectId
 
 from config import Mongo
 
+
+def _make_json_serializable(obj: Any)->Any:
+    if isinstance(obj, dict):
+        return {key: _make_json_serializable(value) for key, value in obj.items()}
+    elif isinstance(obj, list):
+        return [_make_json_serializable(item) for item in obj]
+    elif isinstance(obj, datetime):
+        return obj.isoformat()
+    elif isinstance(obj, ObjectId):
+        return str(obj)
+    else:
+        return obj
 
 class UserAuthentication:
     @staticmethod
@@ -83,21 +97,23 @@ class UserOperation:
                 {"$match": {"_id": _id, "is_delete": False}},
                 {
                     "$project": {
-                        "_id": 0,
-                        "updated_at": 0,
                         "is_delete": 0,
+                        "password":0,
                     }
                 },
             ]
 
-            result = Mongo.user_collection.aggregate(pipeline)
+            result = list(Mongo.user_collection.aggregate(pipeline))
+            print("result:",result)
 
             if not result:
                 raise HTTPException(
                     status_code=status.HTTP_404_NOT_FOUND, detail="User not found."
                 )
+            
+            formated_result=_make_json_serializable(result[0])
 
-            return result[0]
+            return formated_result
         except Exception as e:
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
