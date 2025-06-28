@@ -120,23 +120,27 @@ async def user_update_by_id(
     try:
         token_user = Token.decode_token(token)
         user_dict = user_data.model_dump()
-
+        
         password = user_dict.get("password")
-        confirm_password = user_dict.get("password")
+        confirm_password = user_dict.get("confirm_password")
 
-        if password or confirm_password:
-            if password != user_dict.get("confirm_password"):
+        if password is not None or confirm_password is not None:
+            if password != confirm_password:
                 raise HTTPException(
                     status_code=status.HTTP_400_BAD_REQUEST,
                     detail="Password do not match",
                 )
 
-        hashed_password = PasswordHashing.hashing_password(user_dict.get("password"))
-        user_dict["password"] = hashed_password
+            hashed_password = PasswordHashing.hashing_password(user_dict.get("password"))
+            user_dict["password"] = hashed_password
 
-        user_dict.pop("confirm_password", None)
+            user_dict.pop("confirm_password", None)
 
         UserOperation.update_user_by_id(user_id=user_id, user_data=user_dict)
+
+        return JSONResponse(
+            content={"message":"User updated successful", "status":True}
+        )
 
     except Exception as e:
         raise HTTPException(

@@ -32,8 +32,8 @@ class UserLoginResponse(BaseModel):
     type: Optional[str] = "Bearer"
 
 class UserUpdateModel(BaseModel):
-    username: Optional[str]
-    email: Optional[EmailStr]
-    password: Optional[str]
-    confirm_password: Optional[str]
+    username: Optional[str]=None
+    email: Optional[EmailStr]=None
+    password: Optional[str]=None
+    confirm_password: Optional[str]=None
     
