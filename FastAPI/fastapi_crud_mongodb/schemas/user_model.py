@@ -8,7 +8,7 @@ class UserBase(BaseModel):
     email: EmailStr
     created_at: Optional[datetime] = datetime.now(timezone.utc)
     updated_at: Optional[datetime] = datetime.now(timezone.utc)
-    is_delete: Optional[bool] = False
+    is_deleted: Optional[bool] = False
 
 
 class UserModel(UserBase):
